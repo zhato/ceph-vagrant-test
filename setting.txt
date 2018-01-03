@@ -1,0 +1,35 @@
+# Ansible Server
+
+vagrant ssh ansible
+
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt update -y && sudo apt install ansible -y
+
+ssh-keygen
+
+ssh-copy-id mon1
+ssh-copy-id mon2
+ssh-copy-id mon3
+ssh-copy-id osd1
+ssh-copy-id osd2
+ssh-copy-id osd3
+
+sudo vi /etc/ansible/hosts
+<== hosts 파일 내용을 기록
+
+cd ~
+
+git clone https://github.com/ceph/ceph-ansible.git
+sudo cp -a ceph-ansible/* /etc/ansible
+
+sudo vi /etc/ansible/group_vars/ceph
+<== ceph 파일 내용을 기록
+
+sudo vi /etc/ansible/group_vars/osds
+
+sudo mkdir /etc/ansible/fetch
+sudo chown vagrant /etc/ansible/fetch
+
+cd /etc/ansible
+sudo mv site.yml.sample site.yml
+ansible-playbook -K site.yml
