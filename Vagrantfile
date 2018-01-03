@@ -12,6 +12,8 @@ nodes = [
 ]
 
 Vagrant.configure("2") do |config|
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
   nodes.each do |node|
     config.vm.define node[:hostname] do |nodeconfig|
       nodeconfig.vm.box = "bento/ubuntu-16.04"
@@ -22,11 +24,14 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.provider :virtualbox do |vb|
         vb.customize ['modifyvm', :id, '--memory', memory.to_s]
         if node[:osd] == "yes"
-          vb.customize ['createhd', '--filename', 'disk_osd-#{node[:hostname]}', '--size', '10000']
-          vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 3, '--device', 0, '--type', 'hdd', '--medium', "disk_osd-#{node[:hostname]}.vdi"]
+          vb.customize [ "createhd", "--filename", "disk_osd-#{node[:hostname]}", "--size", "10000" ]
+          vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", 3, "--device", 0, "--type", "hdd", "--medium", "disk_osd-#{node[:hostname]}.vdi" ]
         end
       end
     end
+
+    config.vbguest.no_install = true
+
     config.hostmanager.enabled = true
     config.hostmanager.manage_guest = true
   end
